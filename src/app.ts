@@ -2,9 +2,9 @@ import express from "express";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 
-import { authroutes } from "./auth";
-import { contestRoutes } from "./contest";
-import { problemRoutes } from "./problem";
+import authRoutes from "./auth";
+import contestRoutes from "./contest";
+import problemRoutes from "./problem";
 
 const app = express();
 
@@ -15,8 +15,9 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
   max: 100, 
 });
+app.use(limiter);
 
-app.use("", authroutes)
+app.use("", authRoutes)
 app.use("", contestRoutes);
 app.use("", problemRoutes);
 
