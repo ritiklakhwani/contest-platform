@@ -19,3 +19,43 @@ export const createContestSchema = z.object({
   endTime: z.string().datetime('Invalid datetime format'),
 });
 
+export const createMcqSchema = z.object({
+  question: z.string().min(1, 'Question is required'),
+  options: z.array(z.string()).min(2, 'At least 2 options required'),
+  correctOptionIndex: z.number().int().nonnegative('Invalid option index'),
+  points: z.number().int().positive('Points must be a positive integer'),
+});
+
+export const submitMcqSchema = z.object({
+  selectedOptionIndex: z.number().int().nonnegative('Invalid option index')
+});
+
+export const testCaseSchema = z.object({
+  input: z.string().min(1, 'Input is required'),
+  expectedOutput: z.string().min(1, 'Expected output is required'),
+  isHidden: z.boolean().default(false),
+});
+
+export const createDsaProblemSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  tags: z.array(z.string()).min(1, 'At least one tag is required'),
+  points: z.number().int().positive('Points must be a positive integer'),
+  timeLimit: z.number().int().positive('Time limit must be a positive integer (in milliseconds)'),
+  memoryLimit: z.number().int().positive('Memory limit must be a positive integer (in megabytes)'),
+  testCases: z.array(testCaseSchema).min(1, 'At least one test case is required'),
+})
+
+export const submitDsaProblemSchema = z.object({
+  code: z.string().min(1, 'Code is required'),
+  language: z.string().min(1, 'Language is required'),
+})
+
+export type SignupInput = z.infer<typeof signupSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;     
+export type CreateContestInput = z.infer<typeof createContestSchema>;
+export type CreateMcqInput = z.infer<typeof createMcqSchema>;
+export type SubmitMcqInput = z.infer<typeof submitMcqSchema>;
+export type CreateDsaProblemInput = z.infer<typeof createDsaProblemSchema>;
+export type SubmitDsaProblemInput = z.infer<typeof submitDsaProblemSchema>;
+
