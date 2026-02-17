@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { Request, Response, NextFunction } from "express";
+import rateLimit from "express-rate-limit";
 import {errorResponse} from "./utils";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -26,4 +27,33 @@ export const creatorAuth = (req: Request, res: Response, next: NextFunction) => 
     next();
 }
 
+export const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 5, 
+  handler: (req: Request, res: Response) => {
+    errorResponse(res, "Too many requests, please try again later.", 429);
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+export const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, 
+  max: 100, 
+  handler: (req: Request, res: Response) => {
+    errorResponse(res, "Too many requests, please try again later.", 429);
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+export const submissionLimiter = rateLimit({
+  windowMs: 60 * 1000, 
+  max: 10, 
+  handler: (req: Request, res: Response) => {
+    errorResponse(res, "Too many requests, please try again later.", 429);
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 

@@ -20,3 +20,4 @@ export const isContestActive = (startTime: Date, endTime: Date): boolean=> {
   const now = new Date();
   return now >= startTime && now <= endTime;
 }
+

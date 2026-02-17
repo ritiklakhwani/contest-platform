@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
-import rateLimit from "express-rate-limit";
-
+import type { Request, Response } from "express";
 import authRoutes from "./auth";
 import contestRoutes from "./contest";
 import problemRoutes from "./problem";
@@ -11,15 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  max: 100, 
-});
-app.use(limiter);
-
-app.use("", authRoutes)
-app.use("", contestRoutes);
-app.use("", problemRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/contests', contestRoutes);
+app.use('/api/problems', problemRoutes);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
