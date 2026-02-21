@@ -10,7 +10,7 @@ import {
   apiLimiter,
   submissionLimiter,
 } from "./middleware";
-import { id } from "zod/locales";
+import { id, is } from "zod/locales";
 const router = Router();
 
 //create contest
@@ -176,6 +176,64 @@ router.post(
     }
   },
 );
+
+router.post ('/:contestId/mcq/:mcqId/submit', authMiddleware, submissionLimiter, async (req: Request, res: Response) => {
+  try {
+    if (typeof req.params.contestId !== "string" || typeof req.params.mcqId !== "string")
+      return errorResponse(res, "Invalid contest ID or MCQ ID", 400);
+
+    const contestId = parseInt(req.params.contestId);
+    const mcqId = parseInt(req.params.mcqId);
+    const parsed = submitMcqSchema.safeParse(req.body);
+
+    if (!parsed.success)
+      return errorResponse(res, "Invalid request body", 400);
+
+    const contest = await prisma.contest.findUnique({
+      where: { id: contestId },
+    });
+
+    if (!contest) return errorResponse(res, "Contest not found", 404);
+
+    if(!isContestActive(contest.start_time, contest.end_time))
+      return errorResponse(res, "Contest is not active", 400);
+
+    const mcq = await prisma.mcqQuestion.findUnique({
+      where: { id: mcqId },
+    });
+
+    if (!mcq || mcq.contest_id !== contestId)
+      return errorResponse(res, "MCQ not found in this contest", 404);
+
+    const existingSubmission = await prisma.mcqSubmission.findFirst({
+      where: {
+        user_id: req.user!.id,
+        question_id: mcqId,
+      },
+    });
+
+    if (existingSubmission) return errorResponse(res, "You have already submitted an answer for this question", 400);
+
+    const isCorrect = parsed.data.selectedOptionIndex === mcq.correct_option_index;
+    const pointsEarned = isCorrect ? mcq.points : 0;
+
+    await prisma.mcqSubmission.create({
+      data: {
+        user_id: req.user!.id,
+        question_id: mcqId,
+        selected_option_index: parsed.data.selectedOptionIndex,
+        is_correct: isCorrect,
+        points_earned: pointsEarned,
+      },
+    });
+    
+    res.json(successResponse(res, { correct: isCorrect, pointsEarned }, 200));
+  } catch (error: any) {
+    console.error('Submit MCQ answer error:', error);
+    errorResponse(res, "Failed to submit answer", 500);
+  }
+});
+
 
 
 
