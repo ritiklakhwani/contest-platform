@@ -130,12 +130,53 @@ router.get(
   },
 );
 
-router.post('/:contestId/mcq', authMiddleware, creatorAuth, apiLimiter, async (req: Request, res: Response) => {
-  try {
-    
-  } catch (error) {
-    
-  }
-})
+router.post(
+  "/:contestId/mcq",
+  authMiddleware,
+  creatorAuth,
+  apiLimiter,
+  async (req: Request, res: Response) => {
+    try {
+      if (typeof req.params.contestId !== "string")
+        return errorResponse(res, "Invalid contest ID", 400);
+
+      const contestId = parseInt(req.params.contestId);
+      const parsed = createMcqSchema.safeParse(req.body);
+
+      if (!parsed.success)
+        return errorResponse(res, "Invalid request body", 400);
+
+      const contest = await prisma.contest.findUnique({
+        where: { id: contestId },
+      });
+
+      if (!contest) return errorResponse(res, "Contest not found", 404);
+      if (contest.creator_id !== req.user!.id)
+        return errorResponse(res, "Unauthorized", 403);
+
+      const { question, options, correctOptionIndex, points } = parsed.data;
+
+      if (correctOptionIndex >= options.length)
+        return errorResponse(res, "Correct option index out of bounds", 400);
+
+      const mcq = await prisma.mcqQuestion.create({
+        data: {
+          contest_id: contestId,
+          question_text: question,
+          options,
+          correct_option_index: correctOptionIndex,
+          points,
+        },
+      });
+
+      res.json(successResponse(res, { mcqId: mcq.id, contestId: mcq.contest_id }, 201));
+    } catch (error: any) {
+      console.error('Create MCQ error:', error);
+      errorResponse(res, "Failed to create MCQ", 500);
+    }
+  },
+);
+
+
 
 export default router;
