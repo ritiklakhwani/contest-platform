@@ -345,6 +345,8 @@ router.get(
         }
         return { ...entry, rank };
       });
+
+      res.json(successResponse(res, rankedLeaderboard, 200));
     } catch (error) {
       console.error("Get leaderboard error:", error);
       errorResponse(res, "Failed to fetch leaderboard", 500);
