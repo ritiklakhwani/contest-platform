@@ -3,6 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 import rateLimit from "express-rate-limit";
 import {errorResponse} from "./utils";
 
+// Authentication middleware to verify JWT tokens and protect routes
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const header = req.headers.authorization;
     if(!header) return errorResponse(res, "Unauthorized", 401);
@@ -22,11 +23,13 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
 }
 
+// Middleware to check if the user is a creator
 export const creatorAuth = (req: Request, res: Response, next: NextFunction) => {
     if(!req.user || req.user.role !== "creator") return errorResponse(res, "Forbidden", 403);
     next();
 }
 
+// authentication rate limiter
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
   max: 5, 
@@ -37,6 +40,7 @@ export const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// general API rate limiter
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
   max: 100, 
@@ -47,6 +51,7 @@ export const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// submission rate limiter 
 export const submissionLimiter = rateLimit({
   windowMs: 60 * 1000, 
   max: 10, 

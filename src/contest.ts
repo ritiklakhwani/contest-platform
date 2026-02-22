@@ -13,7 +13,7 @@ import {
 import { id, is } from "zod/locales";
 const router = Router();
 
-//create contest
+//create contest 
 router.post(
   "/create",
   authMiddleware,
@@ -60,6 +60,7 @@ router.post(
   },
 );
 
+//get contest details
 router.get(
   "/:contestId",
   authMiddleware,
@@ -130,6 +131,7 @@ router.get(
   },
 );
 
+// add mcq to contest
 router.post(
   "/:contestId/mcq",
   authMiddleware,
@@ -179,6 +181,7 @@ router.post(
   },
 );
 
+// submit mcq answer
 router.post(
   "/:contestId/mcq/:mcqId/submit",
   authMiddleware,
@@ -250,6 +253,7 @@ router.post(
   },
 );
 
+// get contest leaderboard
 router.get(
   "/:contestId/leaderboard",
   authMiddleware,

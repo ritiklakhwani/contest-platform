@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// signup schema
 export const signupSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
@@ -7,11 +8,13 @@ export const signupSchema = z.object({
   role: z.enum(["creator", "contestee"]),
 });
 
+// login schema
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
+// contest creation schema
 export const createContestSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
@@ -19,6 +22,7 @@ export const createContestSchema = z.object({
   endTime: z.string().datetime('Invalid datetime format'),
 });
 
+// MCQ creation schema
 export const createMcqSchema = z.object({
   question: z.string().min(1, 'Question is required'),
   options: z.array(z.string()).min(2, 'At least 2 options required'),
@@ -26,16 +30,19 @@ export const createMcqSchema = z.object({
   points: z.number().int().positive('Points must be a positive integer'),
 });
 
+// MCQ submission schema
 export const submitMcqSchema = z.object({
   selectedOptionIndex: z.number().int().nonnegative('Invalid option index')
 });
 
+// Test case schema for DSA problems
 export const testCaseSchema = z.object({
   input: z.string().min(1, 'Input is required'),
   expectedOutput: z.string().min(1, 'Expected output is required'),
   isHidden: z.boolean().default(false),
 });
 
+// DSA problem creation schema
 export const createDsaProblemSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
@@ -46,11 +53,13 @@ export const createDsaProblemSchema = z.object({
   testCases: z.array(testCaseSchema).min(1, 'At least one test case is required'),
 })
 
+// DSA problem submission schema
 export const submitDsaProblemSchema = z.object({
   code: z.string().min(1, 'Code is required'),
   language: z.string().min(1, 'Language is required'),
 })
 
+// Type definitions 
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;     
 export type CreateContestInput = z.infer<typeof createContestSchema>;

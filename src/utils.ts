@@ -1,5 +1,6 @@
 import type { Response } from "express";
 
+// Utility functions for sending standardized success and error responses
 export const successResponse = (res: Response, data: Object | string, status: number) => {
   res.status(status).json({
     success: true,
