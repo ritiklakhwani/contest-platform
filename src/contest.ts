@@ -6,7 +6,6 @@ import { createContestSchema, createMcqSchema, submitMcqSchema } from "./zod";
 import {
   authMiddleware,
   creatorAuth,
-  authLimiter,
   apiLimiter,
   submissionLimiter,
 } from "./middleware";

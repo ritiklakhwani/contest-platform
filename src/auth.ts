@@ -3,8 +3,6 @@ import jwt from "jsonwebtoken";
 import { successResponse, errorResponse } from "./utils";
 import bcrypt from "bcrypt";
 import { prisma } from "./db";
-import { authMiddleware, creatorAuth } from "./middleware";
-import { z } from "zod";
 import { signupSchema, loginSchema } from "./zod";
 
 const router = express.Router();

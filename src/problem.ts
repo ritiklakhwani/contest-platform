@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import e, { Router } from "express";
+import { Router } from "express";
 import { successResponse, errorResponse, isContestActive } from "./utils";
 import { prisma } from "./db";
 import { createDsaProblemSchema, submitDsaProblemSchema } from "./zod";
@@ -7,7 +7,6 @@ import {
   authMiddleware,
   creatorAuth,
   apiLimiter,
-  authLimiter,
   submissionLimiter,
 } from "./middleware";
 const router = Router();
@@ -175,7 +174,7 @@ router.post(
         //judge0 implementation
 
         //send response with submission status and results
-        
+
     } catch (error) {
       console.error("Submit DSA solution error:", error);
       errorResponse(res, "Internal server error", 500);

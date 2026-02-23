@@ -2,7 +2,6 @@ import express from "express";
 import dotenv from 'dotenv';
 dotenv.config();
 import cors from "cors";
-import type { Request, Response } from "express";
 import authRoutes from "./auth";
 import contestRoutes from "./contest";
 import problemRoutes from "./problem";
