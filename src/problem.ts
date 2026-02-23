@@ -50,7 +50,40 @@ router.post("/:contestId/dsa", authMiddleware, creatorAuth, apiLimiter, async (r
     }
 });
 
+//get dsa problem details
+router.get("/:problemId", authMiddleware, apiLimiter, async (req: Request, res: Response) => {
+    try {
+        if( typeof req.params.problemId !== "string") return errorResponse(res, "Invalid problem ID", 400);
+    const problemId = parseInt(req.params.problemId);
+    if(!problemId) return errorResponse(res, "Invalid problem ID", 400);
 
+    const problem = await prisma.dsaProblem.findUnique({
+        where: { id: problemId},
+        include: { testCases: { where: { is_hidden: false } } }
+    });
+
+    if(!problem) return errorResponse(res, "Problem not found", 404);
+
+    res.json(successResponse(res, {
+        id: problem.id,
+        contest_id: problem.contest_id,
+        title: problem.title,
+        description: problem.description,
+        tags: problem.tags,
+        points: problem.points,
+        time_limit: problem.time_limit,
+        memory_limit: problem.memory_limit,
+        visible_test_cases: problem.testCases.map((testCase) => ({
+            id: testCase.id,
+            input: testCase.input,
+            expected_output: testCase.expected_output,
+        }))
+    }, 200));
+    } catch (error) {
+        console.error('Get DSA problem error:', error);
+        errorResponse(res, "Internal server error", 500);
+    }
+});
 
 
 export default router;
