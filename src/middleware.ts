@@ -5,10 +5,7 @@ import {errorResponse} from "./utils";
 
 // Authentication middleware to verify JWT tokens and protect routes
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const header = req.headers.authorization;
-    if(!header) return errorResponse(res, "Unauthorized", 401);
-
-    const token = header?.split(" ")[1];
+    const token = req.headers.authorization;
     if(!token) return errorResponse(res, "Unauthorized", 401);
 
     try{
