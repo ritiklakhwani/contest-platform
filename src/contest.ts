@@ -66,9 +66,7 @@ router.get(
   apiLimiter,
   async (req: Request, res: Response) => {
     try {
-      if (typeof req.params.contestId !== "string")
-        return errorResponse(res, "Invalid contest ID", 400);
-      const contestId = parseInt(req.params.contestId);
+      const contestId = Number(req.params.contestId);
       const contest = await prisma.contest.findUnique({
         where: { id: contestId },
         include: {
@@ -138,10 +136,7 @@ router.post(
   apiLimiter,
   async (req: Request, res: Response) => {
     try {
-      if (typeof req.params.contestId !== "string")
-        return errorResponse(res, "Invalid contest ID", 400);
-
-      const contestId = parseInt(req.params.contestId);
+      const contestId = Number(req.params.contestId);
       const parsed = createMcqSchema.safeParse(req.body);
 
       if (!parsed.success)
@@ -187,14 +182,8 @@ router.post(
   submissionLimiter,
   async (req: Request, res: Response) => {
     try {
-      if (
-        typeof req.params.contestId !== "string" ||
-        typeof req.params.mcqId !== "string"
-      )
-        return errorResponse(res, "Invalid contest ID or MCQ ID", 400);
-
-      const contestId = parseInt(req.params.contestId);
-      const mcqId = parseInt(req.params.mcqId);
+      const contestId = Number(req.params.contestId);
+      const mcqId = Number(req.params.mcqId);
       const parsed = submitMcqSchema.safeParse(req.body);
 
       if (!parsed.success)
@@ -259,10 +248,7 @@ router.get(
   apiLimiter,
   async (req: Request, res: Response) => {
     try {
-      if (typeof req.params.contestId !== "string")
-        return errorResponse(res, "Invalid contest ID", 400);
-
-      const contestId = parseInt(req.params.contestId);
+      const contestId = Number(req.params.contestId);
 
       const contest = await prisma.contest.findUnique({
         where: { id: contestId },

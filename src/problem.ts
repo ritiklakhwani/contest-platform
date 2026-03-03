@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { Router } from "express";
 import { successResponse, errorResponse, isContestActive } from "./utils";
 import { prisma } from "./db";
+import type { TestCase } from '@prisma/client'; 
 import { createDsaProblemSchema, submitDsaProblemSchema } from "./zod";
 import {
   authMiddleware,
@@ -19,9 +20,7 @@ router.post(
   apiLimiter,
   async (req: Request, res: Response) => {
     try {
-      if (typeof req.params.contestId !== "string")
-        return errorResponse(res, "Invalid contest ID", 400);
-      const contestId = parseInt(req.params.contestId);
+      const contestId = Number(req.params.contestId);
       if (!contestId) return errorResponse(res, "Invalid contest ID", 400);
 
       const parsed = createDsaProblemSchema.safeParse(req.body);
@@ -96,9 +95,7 @@ router.get(
   apiLimiter,
   async (req: Request, res: Response) => {
     try {
-      if (typeof req.params.problemId !== "string")
-        return errorResponse(res, "Invalid problem ID", 400);
-      const problemId = parseInt(req.params.problemId);
+      const problemId = Number(req.params.problemId);
       if (!problemId) return errorResponse(res, "Invalid problem ID", 400);
 
       const problem = await prisma.dsaProblem.findUnique({
@@ -120,7 +117,7 @@ router.get(
             points: problem.points,
             time_limit: problem.time_limit,
             memory_limit: problem.memory_limit,
-            visible_test_cases: problem.testCases.map((testCase) => ({
+            visible_test_cases: problem.testCases.map((testCase: TestCase) => ({
               id: testCase.id,
               input: testCase.input,
               expected_output: testCase.expected_output,
@@ -143,9 +140,7 @@ router.post(
   submissionLimiter,
   async (req: Request, res: Response) => {
     try {
-      if (typeof req.params.problemId !== "string")
-        return errorResponse(res, "Invalid problem ID", 400);
-      const problemId = parseInt(req.params.problemId);
+      const problemId = Number(req.params.problemId);
       if (!problemId) return errorResponse(res, "Invalid problem ID", 400);
 
       const parsed = submitDsaProblemSchema.safeParse(req.body);
